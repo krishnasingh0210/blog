@@ -1,34 +1,35 @@
 package config
 
-import(
+import (
 	"fmt"
 	"time"
+
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	Server ServerConfig `mapstructure:"server"`
+	Server   ServerConfig   `mapstructure:"server"`
 	Database DatabaseConfig `mapstructure:"database"`
-	JWT JWTConfig `mapstructure:"jwt"`
+	JWT      JWTConfig      `mapstructure:"jwt"`
 }
 
 type ServerConfig struct {
-    Port int `mapstructure:"port"`
-	ReadTimeout time.Duration `mapstructure:"read_timeout"`
+	Port         int           `mapstructure:"port"`
+	ReadTimeout  time.Duration `mapstructure:"read_timeout"`
 	WriteTimeout time.Duration `mapstructure:"write_timeout"`
 }
 
 type DatabaseConfig struct {
-	Host string `mapstructure:"host"`
-	Port int `mapstructure:"port"`
-	User string `mapstructure:"user"`
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	User     string `mapstructure:"user"`
 	Password string `mapstructure:"password"`
-	Name string `mapstructure:"name"`
-	SSLMode string `mapstructure:"sslmode"`
+	Name     string `mapstructure:"name"`
+	SSLMode  string `mapstructure:"sslmode"`
 }
 
 func (d DatabaseConfig) DSN() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s", /*what is this?*/
+	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s",
 		d.User, d.Password, d.Host, d.Port, d.Name, d.SSLMode)
 }
 

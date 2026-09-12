@@ -6,9 +6,10 @@ import (
 	"log"
 	"net/http"
 	"time"
+
 	"github.com/gorilla/mux"
-	_"github.com/jackc/pgx/v5/stdlib"
-	"github.com/krishnasingh0210/blog/internal/infrastucture/config"
+	_ "github.com/jackc/pgx/v5/stdlib"
+	config "github.com/krishnasingh0210/blog/internal/infrastructure"
 )
 
 func main() {
