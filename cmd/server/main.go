@@ -7,9 +7,15 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gorilla/mux"
 	_ "github.com/jackc/pgx/v5/stdlib"
-	config "github.com/krishnasingh0210/blog/internal/infrastructure"
+	"github.com/gorilla/mux"
+
+	"github.com/krishnasingh0210/blog/internal/api/handlers"
+	"github.com/krishnasingh0210/blog/internal/api/routes"
+	"github.com/krishnasingh0210/blog/internal/infrastructure"
+	"github.com/krishnasingh0210/blog/internal/repository"
+	"github.com/krishnasingh0210/blog/internal/service"
+	"github.com/krishnasingh0210/blog/pkg/jwt"
 )
 
 func main() {
@@ -30,11 +36,14 @@ func main() {
 		log.Fatalf("failed to ping db: %v", err)
 	}
 
+	jwtManager := jwt.NewManager(cfg.JWT.Secret, cfg.JWT.AccessTokenTTL)
+
+	userRepo := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepo, jwtManager)
+	authHandler := handlers.NewAuthHandler(userService)
+
 	r := mux.NewRouter()
-	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":"ok"}`))
-	}).Methods(http.MethodGet)
+	routes.Register(r, routes.Handlers{Auth: authHandler}, jwtManager)
 
 	srv := &http.Server{
 		Addr:         ":8080",
